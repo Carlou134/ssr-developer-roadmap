@@ -192,3 +192,13 @@ builder.Services.AddTransient<INotificadorFactura, NotificadorWhatsApp>();
 ```
 
 `EmisorFacturas` no sabe ni le importa cuántos canales de notificación existen. Si mañana se agrega `NotificadorTelegram`, se crea la clase, se registra una línea más, y `EmisorFacturas` nunca se toca — es Open/Closed Principle (ver [01-solid-y-patrones.md](./01-solid-y-patrones.md)) aplicado directamente a la inyección de dependencias.
+
+## DI en otros lenguajes (TS, Python, Java) — el mecanismo cambia, no solo la sintaxis
+
+El concepto (recibir dependencias desde afuera en vez de crearlas adentro) es universal. Lo que cambia bastante es si existe un contenedor formal, y cuál es el comportamiento por defecto:
+
+- **Java (Spring):** tiene su propio contenedor de DI (el *ApplicationContext*), con un detalle que contradice directamente la regla de .NET: **el scope por defecto en Spring ES Singleton.** Si no se especifica nada, Spring asume Singleton — lo opuesto a .NET, donde no existe ningún lifetime por defecto y siempre hay que declararlo explícitamente.
+- **TypeScript (NestJS):** el framework NestJS fue diseñado deliberadamente parecido al modelo de .NET/Angular — tiene un contenedor de DI real, con `@Injectable()` y scopes (`DEFAULT`, `REQUEST`, `TRANSIENT`). Igual que Spring, `DEFAULT` en NestJS se comporta como Singleton si no se especifica otra cosa — de los tres, es el que más se parece a .NET en estructura, pero comparte con Java el detalle del scope por defecto.
+- **Python:** no hay un contenedor de DI integrado y universal como en .NET. Depende completamente del framework: FastAPI tiene su propio sistema basado en funciones (`Depends()`), resuelto por parámetro en cada endpoint, sin conceptos formales de Transient/Scoped/Singleton — esos comportamientos hay que armarlos a mano si hacen falta. Django ni siquiera tiene DI formal en el núcleo; las dependencias se importan o se pasan manualmente, o se usa una librería de terceros aparte.
+
+La lección de fondo, otra vez: antes de aplicar la regla de "no hay lifetime por defecto" (válida en .NET) a un proyecto en Spring o NestJS, hay que verificar el comportamiento real de ese framework — ahí el default SÍ existe, y es Singleton.

@@ -13,6 +13,7 @@ Esta fase cubre las herramientas y el criterio para resolver problemas sin depen
 3. [Interpretación de logs](./03-interpretacion-de-logs.md) — logging estructurado, niveles de log, correlation ID.
 4. [Stack Traces](./04-stack-traces.md) — cómo leer una excepción sin perder el rastro real del error.
 5. [¿Qué son los Trade-offs?](./05-que-son-los-tradeoffs.md) — el vocabulario base para evaluar alternativas: qué es un trade-off, los 8 principales, y un framework práctico para navegarlos.
+6. [Prompts Útiles](./06-prompts-utiles.md) — plantillas listas para pedir ayuda estructurada en los escenarios de esta fase.
 
 ## Nota importante: sintaxis vs comportamiento
 

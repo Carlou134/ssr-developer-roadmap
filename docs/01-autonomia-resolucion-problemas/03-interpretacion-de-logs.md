@@ -115,7 +115,7 @@ Con `Default: Information`, por ejemplo, `Trace` y `Debug` quedan filtrados (no 
 
 ## Logging hacia base de datos
 
-Guardar logs en una tabla (en vez de, o además de, consola/archivos) es una práctica común en producción para tener trazabilidad histórica: poder responder algo como "mostrame todos los errores de ayer" con una query, en vez de grepear archivos de texto.
+Guardar logs en una tabla (en vez de, o además de, consola/archivos) es una práctica común en producción para tener trazabilidad histórica: poder responder algo como "muéstrame todos los errores de ayer" con una query, en vez de grepear archivos de texto.
 
 No se implementa a mano — se agrega un **sink** de base de datos a Serilog (o a NLog), que intercepta lo que ya se escribe con `ILogger` y lo persiste. El código de negocio no cambia:
 

@@ -79,6 +79,10 @@ Es, en esencia, el mismo principio que **No Big Design Up Front**, ya documentad
 
 Los tres apuntan a mantener la complejidad del sistema lo más baja posible — el primer trade-off documentado en toda esta serie: [Complejidad vs. todo lo demás](../01-autonomia-resolucion-problemas/05-que-son-los-tradeoffs.md).
 
+## ¿Cambian en otros lenguajes (TS, Python, Java)?
+
+A diferencia de SOLID y los patrones de diseño, **DRY, KISS y YAGNI no dependen de que el lenguaje sea orientado a objetos.** Son sobre cómo manejar complejidad y conocimiento duplicado — algo universal en TypeScript, Python, Java, o cualquier paradigma. No hay matices de comportamiento que verificar acá: la idea se traslada 1 a 1, solo cambia la sintaxis con la que se aplican.
+
 ## Cuándo pasar de KISS a SOLID
 
 KISS y SOLID no compiten — son dos momentos distintos del mismo código. La pregunta real no es "¿aplico KISS o SOLID?", es **"¿en qué momento dejo de aplicar KISS y empiezo a refactorizar hacia SOLID?"**

@@ -15,6 +15,7 @@ Esta fase cubre los principios, patrones y prácticas que sostienen esa diferenc
 5. [Clase Abstracta vs. Interface](./05-abstract-vs-interface.md) — ES-UN vs. PUEDE-HACER, `sealed` vs `abstract`, sobrecarga vs sobrescritura.
 6. [Inyección de Dependencias](./06-inyeccion-de-dependencias.md) — los 3 lifetimes (Transient/Scoped/Singleton) y el Patrón Options.
 7. [DRY, KISS y YAGNI](./07-principios-de-simplicidad.md) — los tres principios de simplicidad, cruzados con los trade-offs de punto 1.
+8. [Prompts Útiles](./08-prompts-utiles.md) — plantillas listas para pedir ayuda estructurada en los escenarios de esta fase.
 
 ## Nota de alcance
 

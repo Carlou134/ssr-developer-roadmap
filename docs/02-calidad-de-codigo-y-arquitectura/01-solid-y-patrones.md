@@ -348,6 +348,24 @@ Una extensión clásica: si el Command implementa también un método `Deshacer(
 
 **Conexión con arquitecturas modernas:** Command es la base de **CQRS** (Command Query Responsibility Segregation) — separar las operaciones que escriben (Commands) de las que leen (Queries) — usado en .NET con librerías como MediatR, donde el controller queda reducido a armar el comando y despacharlo, sin saber quién ni cómo lo procesa.
 
+## SOLID y patrones en otros lenguajes (TS, Python, Java)
+
+### SOLID
+
+- **S, O y D generalizan bien** — en TypeScript, Python o Java, "una función/clase hace una sola cosa", "se extiende sin modificar lo existente" y "se depende de abstracciones" siguen aplicando exactamente igual, sean o no lenguajes puramente orientados a objetos.
+- **L e I están atadas al modelo de herencia de clases de POO clásica.** Java y TypeScript (con `class`/`interface`) las aplican prácticamente igual que C#. Python es más flexible con el *duck typing* — muchas veces ni hace falta declarar una interfaz formal (aunque existen `Protocol` y `ABC` para eso) — la idea de fondo (no romper el contrato esperado) sigue vigente, pero el mecanismo para hacerla cumplir es más laxo, no impuesto por el compilador como en C#/Java/TS.
+
+### Patrones de diseño
+
+El punto clave para los tres: **TypeScript, Python y Java tienen funciones de primera clase** (se pueden pasar como valores, como los `delegate`/`Func<T>` de C#). Eso cambia cuándo hace falta el patrón completo:
+
+- **Strategy:** en Java "de libro" se usa interfaz + clases (como en C#). En TypeScript y Python, muchas veces alcanza con pasar una función directamente en vez de armar toda la ceremonia de interfaz + clases — el patrón sigue existiendo conceptualmente, pero la implementación se simplifica.
+- **Command:** en TypeScript/Python, un Command a veces es literalmente una función o closure capturando su contexto, sin necesidad de una clase con `Ejecutar()`.
+- **Observer:** en Java no hay una palabra clave como `event`/`delegate` de C# — se implementa a mano con interfaces, o con librerías (RxJava). En TypeScript, es central a la plataforma (eventos del DOM, `EventEmitter` de Node, Observables de RxJS).
+- **Singleton:** en Python, muchas veces ni se implementa como clase con constructor privado — un módulo de Python ya funciona como singleton por cómo cachea Python los imports.
+
+No es que cambie el nombre del patrón — a veces el patrón completo deja de hacer falta porque el lenguaje ya resuelve ese problema con una feature nativa (funciones de primera clase). Verificar esto por lenguaje, no asumirlo, es el mismo hábito que ya se documentó para el resto del roadmap.
+
 ## Singleton (patrón clásico) — el que probablemente conviene evitar
 
 **Problema que dice resolver:** garantizar que una clase tenga una única instancia en toda la aplicación, con un punto de acceso global a ella.
