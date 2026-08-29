@@ -2,7 +2,41 @@
 
 ## ¿Qué es un Stack Trace?
 
-Un stack trace es una **fotografía de la pila de llamadas en el momento exacto en que se lanzó una excepción** — lista, método por método, la cadena completa de "quién llamó a quién" para llegar hasta ahí. No es algo que se genera manualmente: el CLR la arma solo, capturando cada frame activo (cada método en ejecución) en ese instante.
+Para entender un stack trace primero hay que entender qué es la **pila de llamadas** (call stack).
+
+Cuando un método llama a otro método, el programa necesita "acordarse" de a dónde volver una vez que ese método termine. Por eso, cada vez que se llama a un método, se apila una entrada nueva (un "frame") sobre las anteriores, mientras ese método sigue corriendo. Cuando el método termina, esa entrada se saca de la pila — es la misma lógica LIFO que se documentó en [02-depuracion-avanzada.md](./02-depuracion-avanzada.md).
+
+**Ejemplo concreto:**
+
+```csharp
+void MetodoA()
+{
+    MetodoB(); // A llama a B
+}
+
+void MetodoB()
+{
+    MetodoC(); // B llama a C
+}
+
+void MetodoC()
+{
+    throw new Exception("Algo falló"); // acá revienta
+}
+```
+
+En el instante exacto en que `MetodoC()` lanza la excepción, la pila de llamadas se ve así (el frame más reciente, arriba):
+
+```
+MetodoC()   <- el que está corriendo en este momento (el más reciente)
+MetodoB()   <- quien llamó a MetodoC
+MetodoA()   <- quien llamó a MetodoB
+Main()      <- el punto de entrada del programa
+```
+
+Un **stack trace** es exactamente eso: **una fotografía impresa de esa pila, tal cual estaba en el momento exacto del error.** No es algo que se arma manualmente — el CLR la genera solo, y cada vez que algo revienta, ya viene incluida en el objeto `Exception`.
+
+Cuando .NET la imprime, respeta ese mismo orden (el frame más reciente arriba) — por eso, en la sección "Orden de lectura" más abajo, se lee de arriba hacia abajo.
 
 ## Cómo funciona con múltiples try/catch (niveles anidados)
 
@@ -136,6 +170,7 @@ Regla práctica: busca, empezando desde arriba, la PRIMERA línea que sea tu có
 | `ArgumentNullException` | Pasaste `null` a un parámetro que explícitamente no lo acepta |
 | `InvalidOperationException` | Llamaste a un método en un estado del objeto que no lo permite (ej: modificar una colección mientras la iterás) |
 | `TimeoutException` | Una operación (típicamente de base de datos o red) tardó más del límite configurado |
+| `StackOverflowException` | La pila de llamadas se llenó por completo — típicamente por una recursión infinita (un método que se llama a sí mismo sin una condición de corte). Es el límite físico de esa estructura LIFO que se documentó en [02-depuracion-avanzada.md](./02-depuracion-avanzada.md) |
 
 ## throw; vs throw ex;
 

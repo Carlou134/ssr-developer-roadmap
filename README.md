@@ -6,15 +6,15 @@ Mi hoja de ruta técnica y profesional para consolidar el nivel Semi-Senior (SSR
 
 ## 🎯 Estado de Progreso
 
-- [ ] **1. Autonomía y Resolución de Problemas**
-  - [ ] Investigación previa estructurada (2-3 alternativas antes de escalar).
-  - [ ] Depuración avanzada (Breakpoints condicionales, profiling de memory/CPU).
-  - [ ] Interpretación de logs y rastreo de causas raíz en Stack Traces.
+- [x] **1. Autonomía y Resolución de Problemas** — 📄 [Ver apuntes](docs/01-autonomia-resolucion-problemas/)
+  - [x] Investigación previa estructurada (2-3 alternativas antes de escalar).
+  - [x] Depuración avanzada (Breakpoints condicionales, profiling de memory/CPU).
+  - [x] Interpretación de logs y rastreo de causas raíz en Stack Traces.
 
-- [ ] **2. Calidad de Código y Arquitectura**
-  - [ ] Principios SOLID y Patrones de Diseño (Factory, Strategy, Repository).
-  - [ ] Estrategia de Testing (TDD/BDD, Unit & Integration Tests).
-  - [ ] Identificación y refactorización de Deuda Técnica.
+- [x] **2. Calidad de Código y Arquitectura** — 📄 [Ver apuntes](docs/02-calidad-de-codigo-y-arquitectura/)
+  - [x] Principios SOLID y Patrones de Diseño (Factory, Strategy, Repository).
+  - [x] Estrategia de Testing (TDD/BDD, Unit & Integration Tests).
+  - [x] Identificación y refactorización de Deuda Técnica.
 
 - [ ] **3. Diseño de APIs y Contratos Técnicos**
   - [ ] Estándares RESTful semánticos y conceptos de GraphQL.
