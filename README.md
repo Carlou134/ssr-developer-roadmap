@@ -16,29 +16,35 @@ Mi hoja de ruta técnica y profesional para consolidar el nivel Semi-Senior (SSR
   - [x] Estrategia de Testing (TDD/BDD, Unit & Integration Tests).
   - [x] Identificación y refactorización de Deuda Técnica.
 
-- [ ] **3. Diseño de APIs y Contratos Técnicos**
-  - [ ] Estándares RESTful semánticos y conceptos de GraphQL.
-  - [ ] Documentación viva mediante Swagger/OpenAPI y especificaciones claras.
+- [x] **3. Diseño de APIs y Contratos Técnicos** — 📄 [Ver apuntes](docs/03-diseno-de-apis-y-contratos/)
+  - [x] Estándares RESTful semánticos y conceptos de GraphQL.
+  - [x] Documentación viva mediante Swagger/OpenAPI y especificaciones claras.
 
-- [ ] **4. Seguridad y Resiliencia (DevSecOps Básico)**
+- [ ] **4. Arquitectura Frontend, Rendimiento y Calidad**
+  - [ ] Gestión de estado global y de servidor (TanStack Query/SWR): caché, reintentos automáticos, hidratación limpia.
+  - [ ] Profiling y rendimiento de cliente: re-renders innecesarios, Web Vitals (LCP, CLS), Lazy Loading, memory leaks.
+  - [ ] Código limpio y componentización: Server/Client Components, Custom Hooks, prevención de Prop Drilling.
+  - [ ] Estrategia de Testing en UI: Jest/Vitest + React Testing Library, mocking de HTTP con MSW, estados de carga/error.
+
+- [ ] **5. Seguridad y Resiliencia (DevSecOps Básico)**
   - [ ] Prácticas OWASP Top 10 (BOLA, XSS, Sanitización, RBAC).
   - [ ] Gestión estricta de secretos y variables de entorno por ambiente.
   - [ ] Patrones de resiliencia: Retries, Rate Limiting y Circuit Breaker (Polly).
 
-- [ ] **5. Bases de Datos y Rendimiento**
+- [ ] **6. Bases de Datos y Rendimiento**
   - [ ] Modelado eficiente (SQL/NoSQL) e indexación.
   - [ ] Optimización de consultas, Planes de Ejecución y solución al problema N+1.
 
-- [ ] **6. Ecosistema Moderno, Cloud y DevOps**
+- [ ] **7. Ecosistema Moderno, Cloud y DevOps**
   - [ ] Contenerización con Docker y Docker Compose para entorno local/multi-contenedor.
   - [ ] Entendimiento de Pipelines de CI/CD (GitHub Actions, GitLab CI, Azure DevOps).
   - [ ] IA como copiloto: Refactorización y generación de casos borde con validación humana.
 
-- [ ] **7. Observabilidad y Producción**
+- [ ] **8. Observabilidad y Producción**
   - [ ] Logging estructurado (Serilog + Seq/App Insights).
   - [ ] Monitoreo por métricas (Golden Signals, Grafana) y alertas.
 
-- [ ] **8. Criterio de Negocio y Habilidades Blandas**
+- [ ] **9. Criterio de Negocio, Lean UX y Habilidades Blandas**
   - [ ] Mapeo de reglas de negocio, Criterios de Aceptación (Gherkin) y casos borde.
   - [ ] Estimación precisa por desglose de tareas.
   - [ ] Code Reviews constructivos y mentoría a desarrolladores Juniors.
