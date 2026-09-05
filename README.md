@@ -44,7 +44,13 @@ Mi hoja de ruta técnica y profesional para consolidar el nivel Semi-Senior (SSR
   - [ ] Logging estructurado (Serilog + Seq/App Insights).
   - [ ] Monitoreo por métricas (Golden Signals, Grafana) y alertas.
 
-- [ ] **9. Criterio de Negocio, Lean UX y Habilidades Blandas**
+- [ ] **9. Fundamentos de Diseño UI/UX** — 📄 [Ver apuntes](docs/09-fundamentos-diseno-ui-ux/)
+  - [ ] Metodologías de diseño y heurísticas de usabilidad (Double Diamond, Design Thinking, las 10 heurísticas de Nielsen).
+  - [ ] Teoría del color, tipografía y principios de diseño visual (Gestalt, jerarquía, contraste).
+  - [ ] Design Systems y su implementación en código (design tokens, component libraries).
+  - [ ] Accesibilidad digital (a11y): principios POUR, HTML semántico, ARIA, y testing con herramientas y usuarios reales.
+
+- [ ] **10. Criterio de Negocio, Lean UX y Habilidades Blandas**
   - [ ] Mapeo de reglas de negocio, Criterios de Aceptación (Gherkin) y casos borde.
   - [ ] Estimación precisa por desglose de tareas.
   - [ ] Code Reviews constructivos y mentoría a desarrolladores Juniors.
