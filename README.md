@@ -20,10 +20,10 @@ Mi hoja de ruta técnica y profesional para consolidar el nivel Semi-Senior (SSR
   - [x] Estándares RESTful semánticos y conceptos de GraphQL.
   - [x] Documentación viva mediante Swagger/OpenAPI y especificaciones claras.
 
-- [ ] **4. Arquitectura Frontend, Rendimiento y Calidad**
-  - [ ] Gestión de estado global y de servidor (TanStack Query/SWR): caché, reintentos automáticos, hidratación limpia.
-  - [ ] Profiling y rendimiento de cliente: re-renders innecesarios, Web Vitals (LCP, CLS), Lazy Loading, memory leaks.
-  - [ ] Código limpio y componentización: Server/Client Components, Custom Hooks, prevención de Prop Drilling.
+- [ ] **4. Arquitectura Frontend, Rendimiento y Calidad** — 📄 [Ver apuntes](docs/04-arquitectura-frontend-rendimiento-calidad/)
+  - [x] Gestión de estado global y de servidor (TanStack Query/SWR): caché, reintentos automáticos, hidratación limpia.
+  - [x] Profiling y rendimiento de cliente: re-renders innecesarios, Web Vitals (LCP, CLS), Lazy Loading, memory leaks.
+  - [x] Código limpio y componentización: Server/Client Components, Custom Hooks, prevención de Prop Drilling.
   - [ ] Estrategia de Testing en UI: Jest/Vitest + React Testing Library, mocking de HTTP con MSW, estados de carga/error.
 
 - [ ] **5. Seguridad y Resiliencia (DevSecOps Básico)**
