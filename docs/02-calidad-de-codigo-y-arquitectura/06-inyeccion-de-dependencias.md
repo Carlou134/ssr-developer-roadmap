@@ -32,6 +32,25 @@ Se crea **una sola vez en toda la vida de la aplicación**, y todos comparten la
 builder.Services.AddSingleton<ICacheService, CacheService>();
 ```
 
+```mermaid
+flowchart TB
+    subgraph R1["Request HTTP 1"]
+        T1["Transient → instancia A"]
+        T2["Transient → instancia B (otra vez!)"]
+        S1["Scoped → instancia X"]
+    end
+    subgraph R2["Request HTTP 2"]
+        T3["Transient → instancia C"]
+        T4["Transient → instancia D (otra vez!)"]
+        S2["Scoped → instancia Y (distinta a X)"]
+    end
+    SG["Singleton → LA MISMA instancia,<br/>desde que arrancó la app"]
+    R1 -.comparte.-> SG
+    R2 -.comparte.-> SG
+```
+
+Transient nunca reutiliza, ni dentro de la misma request. Scoped reutiliza dentro de una request, pero es una instancia distinta en cada request nueva. Singleton es la única instancia que cruza todas las requests, todo el tiempo de vida de la app.
+
 **Advertencia importante:** un Singleton nunca debería tener estado mutable compartido sin control. Si un Singleton tiene un campo que cambia (`public int Contador;`), y un usuario lo modifica, **todos los demás usuarios ven ese cambio** — porque literalmente es el mismo objeto en memoria para toda la aplicación. Es una fuente clásica de bugs difíciles de rastrear en producción, sobre todo bajo carga concurrente.
 
 ## La Dependencia Cautiva (Captive Dependency)
@@ -46,6 +65,21 @@ public class SincronizadorFondo
 
     public SincronizadorFondo(OrdersContext db) => _db = db;
 }
+```
+
+```mermaid
+sequenceDiagram
+    participant App as Arranque de la app
+    participant Singleton as SincronizadorFondo (Singleton)
+    participant Db as OrdersContext (Scoped)
+
+    App->>Singleton: Se crea una sola vez, para toda la vida de la app
+    Singleton->>Db: Inyectado en el constructor
+    Note over Db: Queda "cautivo" — debería vivir 1 sola request,<br/>pero el Singleton lo retiene para siempre
+
+    loop Cada request HTTP nueva
+        Note over Db: Sigue siendo LA MISMA instancia atrapada,<br/>nunca se libera ni se renueva
+    end
 ```
 
 El `DbContext` queda "cautivo" — como el Singleton nunca muere, esa instancia del contexto tampoco. La conexión a la base de datos nunca se cierra correctamente, y con el tiempo el servidor se queda sin memoria o sin conexiones disponibles.

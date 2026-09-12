@@ -11,6 +11,18 @@ En la práctica, esto significa:
 
 Esto ya está reflejado en tu propio proyecto: `OrdersController` (capa API) llama a `OrderService` (capa de aplicación/negocio), que llama a `IOrderRepository` (una abstracción) — el servicio de negocio nunca sabe si detrás hay MySQL, SQL Server o una lista en memoria.
 
+```mermaid
+flowchart LR
+    A["API / Controller<br/>(OrdersController)"] --> B["Negocio / Aplicación<br/>(OrderService)"]
+    B --> C["Abstracción<br/>(IOrderRepository)"]
+    C -.implementada por.-> D["Infraestructura<br/>(EfOrderRepository)"]
+    D --> E[(Base de Datos)]
+
+    style C fill:#f5f5f5,stroke:#333,stroke-dasharray: 4 4
+```
+
+La flecha punteada es la clave: `OrderService` conoce la interfaz `IOrderRepository`, nunca conoce `EfOrderRepository` directamente. La flecha sólida de dependencia (línea continua) nunca cruza de una capa interna hacia una externa — solo de afuera hacia adentro.
+
 **Señal de alerta (violación del principio):** un controller con un `if` de lógica de negocio adentro, o una entidad de dominio con un atributo de Entity Framework específico de la base de datos. Cuando eso aparece, la capa que debería ser independiente dejó de serlo.
 
 ## Guard Clauses

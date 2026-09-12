@@ -273,6 +273,25 @@ public class SinDescuento : IDiscountStrategy
 }
 ```
 
+```mermaid
+classDiagram
+    class IDiscountStrategy {
+        <<interface>>
+        +Calcular(montoOriginal) decimal
+    }
+    class DescuentoClienteVip
+    class SinDescuento
+    class Contexto {
+        -IDiscountStrategy estrategia
+        +CalcularTotal(monto) decimal
+    }
+    IDiscountStrategy <|.. DescuentoClienteVip
+    IDiscountStrategy <|.. SinDescuento
+    Contexto o--> IDiscountStrategy : usa
+```
+
+El `Contexto` (ej. un `OrderService`) no sabe cuál implementación concreta está usando — solo conoce la interfaz. Cuál estrategia se inyecta se decide afuera, sin tocar `Contexto`.
+
 **Cuándo NO usarlo:** si solo existe una forma de calcular algo y no hay ninguna señal de que vaya a cambiar, una interfaz con una sola implementación es complejidad sin beneficio.
 
 ## Observer
@@ -296,6 +315,18 @@ notificador.OnCambio += () => Console.WriteLine("Algo cambió");
 notificador.OnCambio += () => _logger.LogInformation("Cambio detectado");
 
 notificador.Cambiar(); // dispara ambas suscripciones
+```
+
+```mermaid
+sequenceDiagram
+    participant Notificador
+    participant SuscriptorA as Suscriptor A (log en consola)
+    participant SuscriptorB as Suscriptor B (logger)
+
+    Note over Notificador: Cambiar() ejecuta su lógica interna
+    Notificador->>SuscriptorA: OnCambio()
+    Notificador->>SuscriptorB: OnCambio()
+    Note over Notificador: No conoce a A ni a B — solo dispara el evento
 ```
 
 En .NET, esto se ve reflejado en eventos y delegates del lenguaje (como en el ejemplo de arriba), o en el patrón más amplio de **Domain Events** (ej: al crear un pedido, se dispara un evento `PedidoCreado` que un servicio de email y un servicio de facturación escuchan de forma independiente, sin que `OrderService` sepa que existen).

@@ -55,6 +55,11 @@ Mi hoja de ruta técnica y profesional para consolidar el nivel Semi-Senior (SSR
   - [ ] Estimación precisa por desglose de tareas.
   - [ ] Code Reviews constructivos y mentoría a desarrolladores Juniors.
 
+- [ ] **11. Arquitectura de Sistemas y Estilos Arquitectónicos** — 📄 [Ver apuntes](docs/11-arquitectura-de-sistemas-y-estilos-arquitectonicos/)
+  - [ ] Requisitos no funcionales y restricciones: qué empuja realmente una decisión de arquitectura.
+  - [ ] Estilos de sistema: cliente-servidor, monolito/monolito modular, SOA, arquitectura orientada a eventos, microservicios.
+  - [ ] Cómo elegir un estilo con criterio (NFR, Capex/Opex, build vs. buy) y documentar la decisión (ADRs, C4 Model, Fitness Functions).
+
 ---
 
 ## 🔗 Repositorios Relacionados
