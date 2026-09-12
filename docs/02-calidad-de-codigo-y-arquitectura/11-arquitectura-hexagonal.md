@@ -42,9 +42,69 @@ flowchart LR
 
 El núcleo, en el centro, solo conoce los dos puertos (interfaces) — nunca conoce si el adaptador primario es un Controller REST o un CLI, ni si el adaptador secundario es JPA o un cliente HTTP.
 
+## El recorrido completo, de punta a punta
+
+El punto que más confunde al principio es qué "llama" a qué en cada lado — y la respuesta cambia de dirección exactamente a la mitad del recorrido:
+
+```mermaid
+sequenceDiagram
+    participant Ext1 as Exterior (HTTP)
+    participant AP as Adaptador Primario<br/>(OrderController)
+    participant PP as Puerto Primario<br/>(interfaz CreateOrderUseCase)
+    participant Nucleo as NÚCLEO<br/>(CreateOrderService + Order)
+    participant PS as Puerto Secundario<br/>(interfaz OrderRepository)
+    participant AS as Adaptador Secundario<br/>(JpaOrderRepository)
+    participant Ext2 as Exterior (Base de Datos)
+
+    Ext1->>AP: petición HTTP
+    AP->>PP: llama a
+    PP->>Nucleo: entra al núcleo
+    Note over Nucleo: ejecuta la lógica de negocio
+    Nucleo->>PS: llama a
+    Note over PS: el puerto secundario es la interfaz misma,<br/>no un actor — el núcleo la llama directo
+    PS-->>AS: implementado por
+    AS->>Ext2: guarda el dato real
+```
+
+La regla para no confundirse: en el lado primario, el **adaptador llama al puerto** (el adaptador inicia, entrando al núcleo). En el lado secundario, es al revés — es el **núcleo quien llama al puerto** (porque el puerto ahí es solo una interfaz, no un actor), y el **adaptador secundario es quien la implementa**, siendo el único que realmente sale a tocar la base de datos.
+
 ## Ejemplo en Kotlin
 
 Nota de contexto: aquí se usa Kotlin en vez de C# porque es habitual encontrar Arquitectura Hexagonal explicada y aplicada en proyectos Kotlin/Spring — vale la pena poder leer el patrón en ambos ecosistemas.
+
+### Cómo se organiza en carpetas (estructura real de proyecto)
+
+Antes del código, así es como esto se ve en un proyecto Kotlin/Spring real, con dos módulos de Gradle (retomando lo visto en ["Forzar la regla en el build"](#forzar-la-regla-en-el-build-no-solo-con-disciplina)):
+
+```
+miapp-application/                          ← módulo SIN Spring, SIN JPA, sin nada externo
+└── src/main/kotlin/com/miapp/application/
+    ├── domain/
+    │   └── Order.kt                        ← la entidad (lógica de negocio pura)
+    ├── ports/
+    │   ├── inbound/
+    │   │   └── CreateOrderUseCase.kt       ← puerto primario (interfaz)
+    │   └── outbound/
+    │       └── OrderRepository.kt          ← puerto secundario (interfaz)
+    └── CreateOrderService.kt               ← caso de uso, implementa el puerto primario
+
+miapp-infrastructure/                        ← módulo que SÍ depende de Spring, JPA, etc.
+└── src/main/kotlin/com/miapp/infrastructure/
+    ├── adapter/
+    │   ├── inbound/
+    │   │   └── rest/
+    │   │       ├── OrderController.kt      ← adaptador primario
+    │   │       ├── CreateOrderRequest.kt   ← DTO de entrada (mapea JSON → dominio)
+    │   │       └── OrderResponse.kt        ← DTO de salida (mapea dominio → JSON)
+    │   └── outbound/
+    │       └── persistence/
+    │           ├── JpaOrderRepository.kt   ← adaptador secundario
+    │           └── OrderEntity.kt          ← DTO de persistencia (mapea dominio ↔ tabla)
+    └── config/
+        └── AppConfig.kt                    ← composition root / wiring
+```
+
+`miapp-infrastructure` depende de `miapp-application` (para poder implementar sus interfaces), pero `miapp-application` **nunca** depende de `miapp-infrastructure` — así el compilador impide, no solo la disciplina del equipo, que el núcleo termine importando Spring o JPA por accidente. Los nombres `inbound`/`outbound` (o `in`/`out`, abreviado, como se ve en algunos proyectos Spring reales) son la convención más común para separar visualmente los dos lados del hexágono dentro de las carpetas `ports/` y `adapter/`.
 
 **Núcleo del dominio** (no depende de Spring, ni de JPA, ni de nada externo):
 
@@ -117,14 +177,61 @@ class OrderController(
     private val createOrderUseCase: CreateOrderUseCase // el puerto, no el Service concreto
 ) {
     @PostMapping
-    fun create(@RequestBody request: CreateOrderRequest): ResponseEntity<OrderId> {
-        val id = createOrderUseCase.execute(request.customerId, request.items)
-        return ResponseEntity.status(HttpStatus.CREATED).body(id)
+    fun create(@RequestBody request: CreateOrderRequest): ResponseEntity<OrderResponse> {
+        // 1. Entrada: el DTO de la petición ya trae los datos que el caso de uso necesita
+        val orderId = createOrderUseCase.execute(request.customerId, request.items)
+
+        // 2. Salida: acá es donde se mapea la respuesta — el Controller arma el DTO de salida,
+        //    el núcleo nunca supo que existe un "OrderResponse" ni un JSON
+        return ResponseEntity.status(HttpStatus.CREATED).body(OrderResponse(orderId.value))
     }
+}
+
+// infrastructure/web/OrderResponse.kt — vive al lado del Controller, mismo paquete rest/
+data class OrderResponse(val id: UUID)
+```
+
+**Dónde se mapea la respuesta, en una frase:** en el adaptador primario, después de que el caso de uso ya terminó — nunca dentro del núcleo. El `CreateOrderUseCase`/`CreateOrderService` no sabe ni le importa si el resultado termina en JSON, en una respuesta de gRPC, o impreso en una consola — eso es trabajo exclusivo del Controller (o del adaptador que corresponda). En la carpeta, `OrderResponse.kt` vive junto a `OrderController.kt` y `CreateOrderRequest.kt`, dentro de `adapter/inbound/rest/` — los tres son "detalles del borde primario", nunca del dominio.
+
+Nota práctica: en muchos proyectos reales, el `Service` (caso de uso) e implementación del puerto primario terminan siendo la misma clase, como en el ejemplo — separar la interfaz `CreateOrderUseCase` de `CreateOrderService` es opcional y depende de cuánto valor le des a poder mockear el caso de uso en tests del Controller, versus la interfaz extra que hay que mantener. De hecho, a diferencia del puerto secundario (donde la interfaz es indispensable para poder inyectar una implementación distinta), **el puerto primario ni siquiera necesita ser una interfaz para que la arquitectura funcione en runtime** — su valor real es de documentación: deja explícito, con un tipo, cuál es exactamente el límite de la aplicación.
+
+## Cómo se conecta todo en realidad: el cableado explícito
+
+Las interfaces (los puertos) no "hacen" nada — son solo un contrato. Lo que realmente conecta las piezas son dos cosas distintas: **implementar** (una clase cumple el contrato) y **inyectar** (en un solo lugar, el composition root, se construyen los objetos reales y se pasan donde el tipo lo pide). Sin ese segundo paso, tener las interfaces no sirve de nada — nunca se ejecutaría código real.
+
+**Paso 1 — el composition root arma todo, una sola vez, al arrancar la app:**
+
+```kotlin
+// infrastructure/config/AppConfig.kt
+@Configuration
+class AppConfig {
+
+    @Bean
+    fun orderRepository(jpaRepo: SpringDataOrderJpaRepository): OrderRepository =
+        JpaOrderRepository(jpaRepo) // el adaptador secundario, como implementación real de OrderRepository
+
+    @Bean
+    fun createOrderUseCase(orderRepository: OrderRepository): CreateOrderUseCase =
+        CreateOrderService(orderRepository) // el núcleo, recibiendo el puerto ya resuelto
+
+    // Spring inyecta automáticamente este bean en OrderController porque
+    // su constructor pide un CreateOrderUseCase — el mismo mecanismo que ya
+    // viste en el punto 2 (ver Inyección de Dependencias)
 }
 ```
 
-Nota práctica: en muchos proyectos reales, el `Service` (caso de uso) e implementación del puerto primario terminan siendo la misma clase, como en el ejemplo — separar la interfaz `CreateOrderUseCase` de `CreateOrderService` es opcional y depende de cuánto valor le des a poder mockear el caso de uso en tests del Controller, versus la interfaz extra que hay que mantener. De hecho, a diferencia del puerto secundario (donde la interfaz es indispensable para poder inyectar una implementación distinta), **el puerto primario ni siquiera necesita ser una interfaz para que la arquitectura funcione en runtime** — su valor real es de documentación: deja explícito, con un tipo, cuál es exactamente el límite de la aplicación.
+**Paso 2 — la traza real de ejecución, objeto por objeto, cuando llega una petición:**
+
+1. Llega `POST /orders` → Spring enruta al bean de `OrderController` que ya tiene, desde el arranque, una referencia a la instancia de `CreateOrderService` (aunque el tipo declarado sea `CreateOrderUseCase`).
+2. `OrderController.create(request)` se ejecuta. Mapea `CreateOrderRequest` → llama a `createOrderUseCase.execute(...)`.
+3. Como esa variable en realidad apunta a un `CreateOrderService`, Kotlin ejecuta el código de **esa** clase — esto es polimorfismo (ver [Clase Abstracta vs. Interface](./05-abstract-vs-interface.md)), no magia: la interfaz solo dice "algo con este método existe", el objeto real detrás decide qué código corre.
+4. Dentro de `CreateOrderService.execute(...)`: llama a `Order.create(customerId, items)`. **`Order` es la entidad de dominio** — la lógica de negocio pura (valida que haya al menos un item, calcula el total). El Service no valida nada él mismo, **delega** esa responsabilidad a `Order` — esto es exactamente el Modelo de Dominio Rico visto en [Clean Architecture](./09-clean-architecture.md#modelo-de-dominio-rico-vs-anémico). El Service orquesta; `Order` decide si el estado es válido.
+5. `CreateOrderService` llama a `orderRepository.save(order)`. De nuevo: `orderRepository` es un campo de tipo `OrderRepository` (la interfaz, el puerto secundario), pero el objeto real que se guardó ahí en el `AppConfig` es un `JpaOrderRepository`.
+6. Por polimorfismo, se ejecuta `JpaOrderRepository.save(order)` — ahí, y solo ahí, `Order` se mapea a `OrderEntity` y se llama a `jpaEntityRepository.save(...)` (Spring Data JPA real, tocando la base de datos).
+7. `CreateOrderService.execute(...)` devuelve `order.id` (un `OrderId`, un tipo del dominio) — vuelve subiendo hasta `OrderController`.
+8. `OrderController` mapea ese resultado a `OrderResponse` y responde el HTTP 201.
+
+**La idea que hay que quedarse:** en ningún punto de este recorrido una interfaz "llamó" a otra cosa por sí sola. Lo que pasó es: el composition root construyó los objetos concretos una sola vez, los pasó por constructor donde el tipo declarado era una interfaz, y en cada llamada el runtime ejecutó el código de la clase real gracias al polimorfismo. Es la misma mecánica de inyección de dependencias que ya conoces de .NET (`builder.Services.AddScoped<IOrderRepository, EfOrderRepository>()`), solo que acá el que arma el grafo es Spring (o, en el ejemplo de Ktor visto antes, una clase `Dependencies` escrita a mano).
 
 ## Mapeo obligatorio en los dos bordes, no solo en el secundario
 
