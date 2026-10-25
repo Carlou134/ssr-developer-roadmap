@@ -26,7 +26,7 @@ Mi hoja de ruta técnica y profesional para consolidar el nivel Semi-Senior (SSR
   - [x] Código limpio y componentización: Server/Client Components, Custom Hooks, prevención de Prop Drilling.
   - [ ] Estrategia de Testing en UI: Jest/Vitest + React Testing Library, mocking de HTTP con MSW, estados de carga/error.
 
-- [ ] **5. Seguridad y Resiliencia (DevSecOps Básico)**
+- [ ] **5. Seguridad y Resiliencia (DevSecOps Básico)** — 📄 [Ver apuntes](docs/05-seguridad-y-resiliencia/)
   - [ ] Prácticas OWASP Top 10 (BOLA, XSS, Sanitización, RBAC).
   - [ ] Gestión estricta de secretos y variables de entorno por ambiente.
   - [ ] Patrones de resiliencia: Retries, Rate Limiting y Circuit Breaker (Polly).
