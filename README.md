@@ -60,6 +60,10 @@ Mi hoja de ruta técnica y profesional para consolidar el nivel Semi-Senior (SSR
   - [ ] Estilos de sistema: cliente-servidor, monolito/monolito modular, SOA, arquitectura orientada a eventos, microservicios.
   - [ ] Cómo elegir un estilo con criterio (NFR, Capex/Opex, build vs. buy) y documentar la decisión (ADRs, C4 Model, Fitness Functions).
 
+- [ ] **12. Estructuras de Datos y Algoritmos** — 📄 [Ver apuntes](docs/12-estructuras-de-datos-y-algoritmos/)
+  - [ ] Por qué existen las estructuras de datos y cómo elegirlas según la operación dominante.
+  - [ ] API pública frente a implementación: encapsulación e interfaces como contrato.
+
 ---
 
 ## 🔗 Repositorios Relacionados
