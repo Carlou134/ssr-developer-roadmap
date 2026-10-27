@@ -414,4 +414,4 @@ Ahora la única forma de modificar el carrito es `AddItem`, y el total se calcul
 
 ## Siguiente lección
 
-[Notación asintótica y Big O](03-notacion-asintotica.md)
+[Nodos](03-nodos.md)

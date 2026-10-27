@@ -29,6 +29,7 @@ Si en algún momento aparece una palabra que no conoces, búscala en el [Glosari
 | --- | --- | --- |
 | [1. Por qué estructuras de datos](01-por-que-estructuras-de-datos.md) | Datos y algoritmos, las cuatro funciones de una estructura, acceso por índice y por clave, memoria estática y dinámica, cómo elegir | Colecciones básicas de C# |
 | [2. API de una estructura de datos](02-api-de-una-estructura-de-datos.md) | API pública frente a implementación, encapsulación en C# y JS (`#`), APIs restringidas, fugas de referencias e interfaces como contrato | Lección 1, interfaces |
+| [3. Nodos](03-nodos.md) | Dato y enlaces, `null` como fin del camino, nodos con varios enlaces, nodos huérfanos y cómo sacar un nodo sin perder el resto | Lección 2, `class` frente a `struct` |
 
 -----
 
