@@ -64,6 +64,11 @@ Mi hoja de ruta técnica y profesional para consolidar el nivel Semi-Senior (SSR
   - [ ] Por qué existen las estructuras de datos y cómo elegirlas según la operación dominante.
   - [ ] API pública frente a implementación: encapsulación e interfaces como contrato.
 
+- [ ] **13. Fundamentos de IA para Desarrolladores** — 📄 [Ver apuntes](docs/13-fundamentos-de-ia/)
+  - [ ] Tokens y ventana de contexto: costo, límites y por qué el modelo no tiene memoria.
+  - [ ] MCP (Model Context Protocol): tool use, host/cliente/servidor, tools, resources y prompts.
+  - [ ] Skills: `SKILL.md`, carga progresiva y diferencias con MCP y el prompt de sistema.
+
 ---
 
 ## 🔗 Repositorios Relacionados
