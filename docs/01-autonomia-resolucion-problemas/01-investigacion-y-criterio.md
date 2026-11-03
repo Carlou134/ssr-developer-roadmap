@@ -83,7 +83,7 @@ Depurar 2 pasos es mucho más rápido que depurar 15. Y muchas veces el MRE te r
 
 ### 3. Git como herramienta de depuración
 
-Git no es solo para versionar: cuando algo "andaba bien la semana pasada y ahora no", el historial sabe qué cambió.
+Git no es solo para versionar: cuando algo "funcionaba bien la semana pasada y ahora no", el historial sabe qué cambió.
 
 | Comando | Pregunta que responde |
 | --- | --- |
@@ -108,19 +108,44 @@ git bisect bad                # si sigue roto
 git bisect reset              # termina la sesión y vuelve a tu rama
 ```
 
-Con 10 commits de diferencia, `bisect` encuentra el culpable en unos 4 pasos (log₂ 10 ≈ 3,3) en lugar de revisar uno por uno. Con 1000 commits, en unos 10.
+**Cómo contar los pasos.** Un paso es una prueba: Git te lleva a un commit, compruebas si tiene el bug y se descarta cerca de la mitad de los candidatos. Para saber el máximo, divide la cantidad de commits entre 2 hasta llegar a 1 o menos; cada división es un paso.
 
-Un camino posible con 16 commits sospechosos (en cada paso el resultado puede ser bueno o malo, pero siempre se descarta la mitad):
-
-```mermaid
-graph LR
-    A["16 commits"] --> B["Probar el commit 8"]
-    B --> C["Quedan 8"]
-    C --> D["Probar el commit 4"]
-    D --> E["Quedan 4"]
-    E --> F["Probar el commit 2"]
-    F --> G["Queda 1: el culpable"]
+```text
+16 commits:  16 → 8 → 4 → 2 → 1                                     = 4 pasos
+200 commits: 200 → 100 → 50 → 25 → 12,5 → 6,25 → 3,1 → 1,6 → 0,8    = 8 pasos
 ```
+
+Es lo mismo que calcular log₂ y redondear hacia arriba: log₂ 200 ≈ 7,6, así que 8 pasos. Con 1000 commits son solo 10. Cada `git bisect skip` puede sumar algún paso más.
+
+**La lógica que debes seguir:**
+
+1. **Escribe el MRE:** una prueba que falle por el bug que investigas, no por otra razón.
+2. **Confirma los dos extremos:** la prueba falla en la versión actual y pasa en la versión que crees buena.
+3. **Abre la búsqueda:** `git bisect start`, `git bisect bad` y `git bisect good <commit-bueno>`.
+4. **Prueba el commit al que te lleva Git y márcalo:**
+
+   | Resultado | Marca | Qué concluye Git |
+   | --- | --- | --- |
+   | Funciona | `git bisect good` | El bug entró después de este commit |
+   | Falla | `git bisect bad` | El bug entró en este commit o antes |
+   | No se puede probar | `git bisect skip` | No concluye nada; elige otro commit cercano |
+
+5. **Repite el paso 4** hasta que aparezca `is the first bad commit`.
+6. **Copia el hash y cierra la sesión** con `git bisect reset`.
+7. **Entiende el cambio** con `git show`, `git blame` o `git log -p`. `bisect` te dice dónde está el problema, no por qué ocurre.
+
+Un ejemplo con 16 commits, donde el 16 es la versión actual y el culpable es el 12:
+
+| Paso | Candidatos | Pruebas el | Resultado | Quedan |
+| --- | --- | --- | --- | --- |
+| 1 | del 1 al 16 | 8 | Funciona | del 9 al 16 |
+| 2 | del 9 al 16 | 12 | Falla | del 9 al 12 |
+| 3 | del 9 al 12 | 10 | Funciona | 11 y 12 |
+| 4 | 11 y 12 | 11 | Funciona | 12: el culpable |
+
+> **Ojo:** el commit 12 ya falló en el paso 2, pero en ese momento el bug podía venir de antes. Solo es el culpable cuando se comprueba que el commit anterior funciona. Por eso la última prueba puede salir bien y aun así terminar la búsqueda.
+
+`bisect` asume que en el rango hay un solo cambio de "funciona" a "falla". Si el bug aparece y desaparece, o la prueba falla al azar, puede señalar un culpable falso.
 
 Si lo usas mal:
 
@@ -324,7 +349,7 @@ git bisect run dotnet test --filter "FullyQualifiedName~CalcularTotal"
 git bisect reset
 ```
 
-Git prueba cada commit sin que intervengas. El código de salida 125 le indica a `bisect` que salte ese commit, como `git bisect skip`.
+Git prueba los commits que va eligiendo, sin que intervengas. El código de salida 125 le indica a `bisect` que salte ese commit, como `git bisect skip`.
 
 </details>
 
