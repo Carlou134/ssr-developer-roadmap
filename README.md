@@ -35,7 +35,7 @@ Mi hoja de ruta técnica y profesional para consolidar el nivel Semi-Senior (SSR
   - [ ] Modelado eficiente (SQL/NoSQL) e indexación.
   - [ ] Optimización de consultas, Planes de Ejecución y solución al problema N+1.
 
-- [ ] **7. Ecosistema Moderno, Cloud y DevOps**
+- [ ] **7. Ecosistema Moderno, Cloud y DevOps** — 📄 [Ver apuntes](docs/07-ecosistema-moderno-cloud-y-devops/)
   - [ ] Contenerización con Docker y Docker Compose para entorno local/multi-contenedor.
   - [ ] Entendimiento de Pipelines de CI/CD (GitHub Actions, GitLab CI, Azure DevOps).
   - [ ] IA como copiloto: Refactorización y generación de casos borde con validación humana.
